@@ -2,6 +2,7 @@ package com.example.cityreport;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,17 +13,29 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.config.IConfigurationProvider;
@@ -32,10 +45,13 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
 
@@ -48,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     Button btnSubir;        //Botón para subir el reporte
     EditText textoDesc;     //Texto de la descripción del reporte
     boolean primerclick = false; //Verdadero cuando se rellene por primera vez la descripción
+    private String KEY_IMAGEN = "foto";
+    private String KEY_NOMBRE = "nombre";
+    private String KEY_LON = "Longitud";
+    private String KEY_LAT = "Latitud";
+    private String UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirfoto.php";
+
 
     private Bitmap bitmap = null;// Variable para guardar la imagen en un bitmap
     private Uri filePath;// variable para guardar el path donde se guarda la foto
@@ -98,7 +120,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //
+        btnSubir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                uploadImage();
+
+            }
+        });
+
     }
+
 
     private void comprobarPermisos() {
         int internetPermissionCheck = ContextCompat.checkSelfPermission(this,
@@ -259,8 +292,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     String currentPhotoPath;
     ///para crear el archivo de la foto
     private File createImageFile() throws IOException {
@@ -334,6 +365,125 @@ public class MainActivity extends AppCompatActivity {
         alertOpciones.show();
 
 
+    }
+
+
+
+
+
+    ////////////////////////////////////////////////////////////
+    ///// subir reporte/////////////////////////////////////////
+    private void uploadImage() {
+        //Mostrar el diálogo de progreso
+        if (bitmap == null) {
+            UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirNoImage.php"; //funcion servidor para subir a la base de datos sin foto
+        } else {
+            UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirfoto.php";
+        }
+        final ProgressDialog loading = ProgressDialog.show(this, "Subiendo...", "Espere por favor...", false, false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        //Descartar el diálogo de progreso
+                        loading.hide();
+
+                        if (s.trim().equalsIgnoreCase("ok")) {
+                            Toast.makeText(MainActivity.this, "Reporte enviado correctamente", Toast.LENGTH_LONG).show();
+                            restablecer(); //se restablecen los campos por defecto
+                        }
+
+                        else
+                            Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
+
+                        //Mostrando el mensaje de la respuesta
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        //Descartar el diálogo de progreso
+                        loading.hide();
+
+                        //Showing toast
+                        Toast.makeText(MainActivity.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //Convertir bits a cadena
+                if (bitmap != null) {
+                    String imagen = getStringImagen(bitmap);
+
+                    //Obtener el nombre de la imagen
+                    String nombre = textoDesc.getText().toString().trim();
+
+
+
+                    //Creación de parámetros
+                    Map<String, String> params = new HashMap<>();
+
+                    //Agregando de parámetros
+
+                    params.put(KEY_IMAGEN, imagen);
+                    params.put(KEY_NOMBRE, nombre);
+
+                    params.put(KEY_LAT,mLastLocation.getMyLocation().getLatitude()+"");
+                    params.put(KEY_LON,mLastLocation.getMyLocation().getLongitude()+"");
+
+
+
+                    //Parámetros de retorno
+                    return params;
+                } else {
+
+                    //Obtener el nombre de la imagen
+                    String nombre = textoDesc.getText().toString().trim();
+
+
+
+                    //Creación de parámetros
+                    Map<String, String> params = new HashMap<>();
+
+                    //Agregando de parámetros
+
+                    params.put(KEY_NOMBRE, nombre);
+
+                    params.put(KEY_LAT,mLastLocation.getMyLocation().getLatitude()+"");
+                    params.put(KEY_LON,mLastLocation.getMyLocation().getLongitude()+"");
+
+
+
+                    //Parámetros de retorno
+                    return params;
+                }
+            }
+        };
+
+        //Creación de una cola de solicitudes
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        //Agregar solicitud a la cola
+        requestQueue.add(stringRequest);
+
+
+    }
+
+
+    public void restablecer()
+    {
+        vistaImagen.setImageResource(R.drawable.no_image);
+        textoDesc.setText("");
+        bitmap=null;
+    }
+    public String getStringImagen(Bitmap bmp) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
     }
 
 }
