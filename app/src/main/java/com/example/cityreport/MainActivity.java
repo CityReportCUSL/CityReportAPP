@@ -1,10 +1,17 @@
 package com.example.cityreport;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -15,6 +22,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.config.IConfigurationProvider;
@@ -23,6 +31,11 @@ import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
 
@@ -35,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
     Button btnSubir;        //Botón para subir el reporte
     EditText textoDesc;     //Texto de la descripción del reporte
     boolean primerclick = false; //Verdadero cuando se rellene por primera vez la descripción
+
+    private Bitmap bitmap = null;// Variable para guardar la imagen en un bitmap
+    private Uri filePath;// variable para guardar el path donde se guarda la foto
+    private int PICK_IMAGE_REQUEST = 1;// flag para invocar a la app de cámara
+
+
     private MapController controladorMapa;
     private MyLocationNewOverlay mLastLocation;
 
@@ -69,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
                     textoDesc.setText("");
                     primerclick = true;
                 }
+            }
+        });
+
+        //Boton para tomar o seleccionar foto
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showFileChooser();
             }
         });
 
@@ -188,6 +214,40 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                //Cómo obtener el mapa de bits de la Galería
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                //Configuración del mapa de bits en ImageView
+                vistaImagen.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+
+
+
+            vistaImagen.setImageURI(photoURI);
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+        }
+    }
+
     public void onResume() {
         super.onResume();
         vistaMapa.onResume(); //needed for compass, my location overlays, v6.0.0 and up
@@ -196,6 +256,84 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         vistaMapa.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+
+
+
+    String currentPhotoPath;
+    ///para crear el archivo de la foto
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    static final int REQUEST_TAKE_PHOTO = 2;
+    Uri photoURI;
+
+
+    ///para tomar la foto con la app de la cámara
+    private void tomarfoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+               photoURI = FileProvider.getUriForFile(this, "com.example.cityreport.provider", photoFile);
+               takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    ///////////////////////////////////////////////
+
+    //Función para seleccionar archivo de la foto o invocar a la función que crea y toma la foto con la cámara
+    private void showFileChooser() { //Menu seleccionar imagen
+
+        final CharSequence[] opciones = {"Tomar Foto", "Seleccionar Imagen", "Cancelar"};
+        final AlertDialog.Builder alertOpciones = new AlertDialog.Builder(MainActivity.this);
+        alertOpciones.setTitle("Seleccione una Opción");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (opciones[i].equals("Tomar Foto")) {
+                    tomarfoto();
+                } else if (opciones[i].equals("Seleccionar Imagen")) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Imagen"), PICK_IMAGE_REQUEST);
+
+                } else {
+                    dialogInterface.dismiss();
+                }
+            }
+
+        });
+        alertOpciones.show();
+
+
     }
 
 }
