@@ -99,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         textoDesc = findViewById(R.id.editText);
 
-        //imageView = (ImageView) findViewById(R.id.imageView);
-
         comprobarPermisos();
 
         //Eliminar el texto cuando clique en el área del texto de la descripción
@@ -368,10 +366,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-    ////////////////////////////////////////////////////////////
     ///// subir reporte/////////////////////////////////////////
     private void uploadImage() {
         //Mostrar el diálogo de progreso
@@ -389,8 +383,7 @@ public class MainActivity extends AppCompatActivity {
                         loading.hide();
 
                         if (s.trim().equalsIgnoreCase("ok")) {
-                            Toast.makeText(MainActivity.this, "Reporte enviado correctamente", Toast.LENGTH_LONG).show();
-                            restablecer(); //se restablecen los campos por defecto
+                            limpiar(); //se restablecen los campos por defecto
                         }
 
                         else
@@ -471,6 +464,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void limpiar()
+    {
+        LayoutInflater imagenDialogo = LayoutInflater.from(MainActivity.this);
+        final View vista = imagenDialogo.inflate(R.layout.okenviado,null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Reporte enviado correctamente")
+                .setView(vista)
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                limpiar(); //Muestra ventana de OK y reestablece los campos
+
+                            }})
+                .create();
+
+        AlertDialog dialogo = builder.show();
+        dialogo.setCanceledOnTouchOutside(false);
+
+        //centrar el boton OK
+        final Button positiveButton = dialogo.getButton(AlertDialog.BUTTON_POSITIVE);
+        LinearLayout.LayoutParams positiveButtonLL = (LinearLayout.LayoutParams) positiveButton.getLayoutParams();
+        positiveButtonLL.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        positiveButton.setLayoutParams(positiveButtonLL);
+    }
 
     public void restablecer()
     {
