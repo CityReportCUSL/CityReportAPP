@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnSelect;       //Botón para seleccionar imagen
     Button btnSubir;        //Botón para subir el reporte
     EditText textoDesc;     //Texto de la descripción del reporte
-    boolean primerclick = false; //Verdadero cuando se rellene por primera vez la descripción
+    boolean primerclick = false; //Verdadero cuando se clique por primera vez la descripción
     private String KEY_IMAGEN = "foto";
     private String KEY_NOMBRE = "nombre";
     private String KEY_LON = "Longitud";
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MapController controladorMapa;
     private MyLocationNewOverlay mLastLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,17 +103,24 @@ public class MainActivity extends AppCompatActivity {
 
         comprobarPermisos();
 
+
         //Eliminar el texto cuando clique en el área del texto de la descripción
-        textoDesc.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (!primerclick) {
-                    textoDesc.setText("");
-                    primerclick = true;
+        textoDesc.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEvent.ACTION_UP == event.getAction()) {
+                    if (!primerclick) {
+                        textoDesc.setText("");
+                        primerclick = true;
+                    }
                 }
+                return false;
+
             }
+
         });
 
-        //Boton para tomar o seleccionar foto
+        //Botón para tomar o seleccionar foto
         btnSelect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 showFileChooser();
@@ -400,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
                         loading.hide();
 
                         //Showing toast
-                        Toast.makeText(MainActivity.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 }) {
@@ -477,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                limpiar(); //Muestra ventana de OK y reestablece los campos
+                                restablecer(); //Muestra ventana de OK y reestablece los campos
 
                             }})
                 .create();

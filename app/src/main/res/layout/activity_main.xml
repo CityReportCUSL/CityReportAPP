@@ -66,10 +66,8 @@ tools:context=".MainActivity">
             android:overScrollMode="always"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical"
-            android:text="Describa la incidencia...."
-            android:textAlignment="center"
-
-            />
+            android:text="Describa la incidencia..."
+            android:textAlignment="center" />
 
         <ImageView
             android:id="@+id/imageView"
