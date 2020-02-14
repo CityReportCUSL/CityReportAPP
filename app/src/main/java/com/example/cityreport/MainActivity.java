@@ -131,9 +131,12 @@ public class MainActivity extends AppCompatActivity {
         btnSubir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(textoDesc.getText().toString().equals("")||textoDesc.getText().toString().equals("Describa la incidencia...")) {
 
-                uploadImage();
-
+                    Toast.makeText(MainActivity.this,"Debe introducir descripción!", Toast.LENGTH_LONG).show();
+                }else{
+                    uploadImage();
+                }
             }
         });
 
