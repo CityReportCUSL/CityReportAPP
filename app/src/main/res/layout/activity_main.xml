@@ -58,8 +58,8 @@ tools:context=".MainActivity">
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="9dp"
-            android:layout_marginTop="315dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="347dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/background"
             android:ems="10"
@@ -83,6 +83,28 @@ tools:context=".MainActivity">
             android:scaleType="fitStart"
             app:srcCompat="@drawable/no_image"
             tools:srcCompat="@android:drawable/ic_menu_camera" />
+
+        <Switch
+            android:id="@+id/switchUbicacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mapview"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="16dp"
+            android:checked="false"
+            android:text="Ubicación manual"
+            tools:checked="false" />
+
+        <TextView
+            android:id="@+id/textoDireccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mapview"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="162dp"
+            android:layout_toStartOf="@+id/switchUbicacion"
+            android:text="Dirección:" />
 
     </RelativeLayout>
 </ScrollView>

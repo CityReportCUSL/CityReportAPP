@@ -20,9 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,9 +42,13 @@ import com.android.volley.toolbox.Volley;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.config.IConfigurationProvider;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -64,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnSelect;       //Botón para seleccionar imagen
     Button btnSubir;        //Botón para subir el reporte
     EditText textoDesc;     //Texto de la descripción del reporte
+    Switch switchUbicacion; //Selector de ubicacion manual
+
     boolean primerclick = false; //Verdadero cuando se clique por primera vez la descripción
     private String KEY_IMAGEN = "foto";
     private String KEY_NOMBRE = "nombre";
@@ -78,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private MapController controladorMapa;
-    private MyLocationNewOverlay mLastLocation;
-
+    private MyLocationNewOverlay mLastLocation; //Localizacion obtenida por GPS
+    private Marker markerManual; //Marcador al clicar en el mapa
+    private GeoPoint ubicacion; //Ubicación del reporte
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         btnSubir = findViewById(R.id.boton_subir);
 
         textoDesc = findViewById(R.id.editText);
+
+        switchUbicacion = findViewById(R.id.switchUbicacion);
 
         comprobarPermisos();
 
@@ -134,6 +145,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        switchUbicacion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(MainActivity.this, "Clique en el mapa para indicar la ubicación",Toast.LENGTH_LONG);
+                setupMap();
+            }
+        });
     }
 
 
@@ -205,24 +222,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMap() {
-        Toast.makeText(this, "Cargando mapa...", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Cargando mapa...", Toast.LENGTH_SHORT).show();
         IConfigurationProvider provider = Configuration.getInstance();
         provider.setUserAgentValue(BuildConfig.APPLICATION_ID);
         provider.setOsmdroidBasePath(getStorage());
         provider.setOsmdroidTileCache(getStorage());
 
-
         vistaMapa.setBuiltInZoomControls(true);
         vistaMapa.setClickable(true);
         vistaMapa.setMultiTouchControls(true);
-
 
         controladorMapa = (MapController) vistaMapa.getController();
         //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
         vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
         controladorMapa.setZoom(20);
 
+        //Retrasar zoom para que cargue mas rapido el mapa
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                controladorMapa.setZoom(18);
+            }
+        }, 2000);
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                controladorMapa.setZoom(20);
+            }
+        }, 4000);
 
+        if(switchUbicacion.isChecked()) { //Si el interruptor esta activado
+            final MapEventsReceiver mReceive = new MapEventsReceiver() {
+                @Override
+                public boolean singleTapConfirmedHelper(GeoPoint p) {
+                    vistaMapa.getOverlays().remove(mLastLocation);
+                    vistaMapa.getOverlays().remove(markerManual);
+                    markerManual = new Marker(vistaMapa);
+                    markerManual.setPosition(p);
+                    vistaMapa.getController().animateTo(p);//centrar el mapa en mi localizacion
+                    controladorMapa.setZoom(18);
+                    vistaMapa.getOverlays().add(markerManual);
+                    //Toast.makeText(getBaseContext(), p.getLatitude() + " - " + p.getLongitude(), Toast.LENGTH_LONG).show();
+
+                    ubicacion = p; //Establecemos la ubicacion indicada por el usuario
+                    return false;
+                }
+
+                @Override
+                public boolean longPressHelper(GeoPoint p) {
+                    return false;
+                }
+            };
+
+            vistaMapa.getOverlays().add(new MapEventsOverlay(mReceive));
+        }
+        else
+            getGPS();
+
+    }
+    private void getGPS()
+    {
+        vistaMapa.getOverlays().clear();
+        vistaMapa.getOverlays().remove(markerManual); //Quitar el marcador de ubicacion manual si lo hubiera
         GpsMyLocationProvider provider2 = new GpsMyLocationProvider(getApplicationContext());
         provider2.addLocationSource(LocationManager.NETWORK_PROVIDER); //network funciona mejor que gps
         mLastLocation = new MyLocationNewOverlay(provider2, vistaMapa);
@@ -233,24 +293,8 @@ public class MainActivity extends AppCompatActivity {
 
         vistaMapa.getController().animateTo(mLastLocation.getMyLocation());//centrar el mapa en mi localizacion
 
-        //Retrasar zoom para que cargue mas rapido el mapa
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                controladorMapa.setZoom(18);
-            }
-        }, 2000);
-
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                controladorMapa.setZoom(20);
-            }
-        }, 4000);
-
-
+        ubicacion = mLastLocation.getMyLocation(); //Establecemos la ubicacion sacada del GPS
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -376,9 +420,9 @@ public class MainActivity extends AppCompatActivity {
     private void uploadImage() {
         //Mostrar el diálogo de progreso
         if (bitmap == null) {
-            UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirNoImage.php"; //funcion servidor para subir a la base de datos sin foto
+            UPLOAD_URL = "https://cityreport.ga/funcionesphp/subirNoImage.php"; //funcion servidor para subir a la base de datos sin foto
         } else {
-            UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirfoto.php";
+            UPLOAD_URL = "https://cityreport.ga/funcionesphp/subirfoto.php";
         }
         final ProgressDialog loading = ProgressDialog.show(this, "Subiendo...", "Espere por favor...", false, false);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
@@ -419,8 +463,6 @@ public class MainActivity extends AppCompatActivity {
                     //Obtener el nombre de la imagen
                     String nombre = textoDesc.getText().toString().trim();
 
-
-
                     //Creación de parámetros
                     Map<String, String> params = new HashMap<>();
 
@@ -429,8 +471,8 @@ public class MainActivity extends AppCompatActivity {
                     params.put(KEY_IMAGEN, imagen);
                     params.put(KEY_NOMBRE, nombre);
 
-                    params.put(KEY_LAT,mLastLocation.getMyLocation().getLatitude()+"");
-                    params.put(KEY_LON,mLastLocation.getMyLocation().getLongitude()+"");
+                    params.put(KEY_LAT,ubicacion.getLatitude()+"");
+                    params.put(KEY_LON,ubicacion.getLongitude()+"");
 
 
 
@@ -511,5 +553,6 @@ public class MainActivity extends AppCompatActivity {
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
     }
+
 
 }
