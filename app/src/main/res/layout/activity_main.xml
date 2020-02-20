@@ -1,112 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#16251C1C"
-tools:context=".MainActivity">
-
-<ScrollView
-    android:id="@+id/scrollView2"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#16251C1C"
+    android:backgroundTint="@android:color/background_dark"
+    tools:context=".MainActivity">
 
-    <RelativeLayout
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <org.osmdroid.views.MapView
-            android:id="@+id/mapview"
-            android:layout_width="379dp"
-            android:layout_height="292dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="14dp"
-            android:layout_marginEnd="18dp"
-            android:visibility="visible" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/botonSelect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
-            android:text="AÑADIR IMAGEN" />
+            <Button
+                android:id="@+id/botonSelect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/editText"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="AÑADIR IMAGEN" />
 
 
-        <Button
-            android:id="@+id/boton_subir"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
-            android:layout_marginStart="124dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="380dp"
-            android:layout_toEndOf="@+id/botonSelect"
-            android:text="ENVIAR REPORTE" />
+            <Button
+                android:id="@+id/boton_subir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/editText"
+                android:layout_marginStart="124dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="380dp"
+                android:layout_toEndOf="@+id/botonSelect"
+                android:text="ENVIAR REPORTE" />
 
-        <EditText
-            android:id="@+id/editText"
-            style="@android:style/Widget.AutoCompleteTextView"
-            android:layout_width="391dp"
-            android:layout_height="174dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="347dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/background"
-            android:ems="10"
-            android:overScrollMode="always"
-            android:scrollbarStyle="insideInset"
-            android:scrollbars="vertical"
-            android:text="Describa la incidencia..."
-            android:textAlignment="center" />
+            <EditText
+                android:id="@+id/editText"
+                style="@android:style/Widget.AutoCompleteTextView"
+                android:layout_width="391dp"
+                android:layout_height="174dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="9dp"
+                android:layout_marginTop="347dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/background"
+                android:ems="10"
+                android:overScrollMode="always"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:text="Describa la incidencia..."
+                android:textAlignment="center" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/botonSelect"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="14dp"
-            android:layout_marginEnd="9dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitStart"
-            app:srcCompat="@drawable/no_image"
-            tools:srcCompat="@android:drawable/ic_menu_camera" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/botonSelect"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="9dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/no_image"
+                tools:srcCompat="@android:drawable/ic_menu_camera" />
 
-        <Switch
-            android:id="@+id/switchUbicacion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/mapview"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="9dp"
-            android:layout_marginEnd="16dp"
-            android:checked="false"
-            android:text="Ubicación manual"
-            tools:checked="false" />
+            <Switch
+                android:id="@+id/switchUbicacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="309dp"
+                android:layout_marginEnd="22dp"
+                android:layout_marginBottom="311dp"
+                android:checked="false"
+                android:text="Ubicación manual"
+                tools:checked="false" />
 
-        <TextView
-            android:id="@+id/textoDireccion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/mapview"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="162dp"
-            android:layout_toStartOf="@+id/switchUbicacion"
-            android:text="Dirección:" />
+        </RelativeLayout>
+    </ScrollView>
 
-    </RelativeLayout>
-</ScrollView>
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="match_parent"
+        android:layout_height="292dp"
+        android:visibility="visible"
+        tools:layout_editor_absoluteX="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         switchUbicacion = findViewById(R.id.switchUbicacion);
 
         comprobarPermisos();
+        setupMap();
 
 
         //Eliminar el texto cuando clique en el área del texto de la descripción
@@ -147,10 +148,21 @@ public class MainActivity extends AppCompatActivity {
 
         switchUbicacion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(MainActivity.this, "Clique en el mapa para indicar la ubicación",Toast.LENGTH_LONG);
+                if(isChecked) {
+                    Toast.makeText(MainActivity.this, "Clique en el mapa para indicar la ubicación", Toast.LENGTH_LONG).show();
+
+                }
+                else if(ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED) //Si no ha otorgado permiso de ubicación
+                {
+                    Toast.makeText(MainActivity.this, "No ha otorgado permiso de ubicación!", Toast.LENGTH_LONG).show();
+                    switchUbicacion.setChecked(true); //Se impide la ubicacion automatica
+                    comprobarPermisos(); //Se vuelven a solicitar los permisos
+                }
                 setupMap();
             }
         });
+
     }
 
 
@@ -180,9 +192,10 @@ public class MainActivity extends AppCompatActivity {
                 fineLocationPermissionCheck == PackageManager.PERMISSION_GRANTED &&
                 wifiStatePermissionCheck == PackageManager.PERMISSION_GRANTED) {
 
-            setupMap();
+
 
         } else {
+            switchUbicacion.setChecked(true); //Activamos la ubicacion manual, al no tener permisos
             ActivityCompat.requestPermissions(this,
                     new String[]{
                             Manifest.permission.INTERNET,
@@ -207,13 +220,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if (somePermissionWasDenied) {
-                        Toast.makeText(this, "No se puede cargar el mapa si no otorga los permisos necesarios!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No ha otorgado permiso de ubicación!!", Toast.LENGTH_SHORT).show();
                     } else {
-                        setupMap();
 
                     }
                 } else {
-                    Toast.makeText(this, "No se puede cargar el mapa si no otorga los permisos necesarios!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No ha otorgado permiso de ubicación!!", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -235,10 +247,11 @@ public class MainActivity extends AppCompatActivity {
         controladorMapa = (MapController) vistaMapa.getController();
         //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
         vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
-        controladorMapa.setZoom(20);
+        controladorMapa.animateTo(new GeoPoint(37.2663800,-6.9400400 ));
+        controladorMapa.setZoom(14);
 
         //Retrasar zoom para que cargue mas rapido el mapa
-        Handler handler = new Handler();
+/*        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 controladorMapa.setZoom(18);
@@ -248,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 controladorMapa.setZoom(20);
             }
-        }, 4000);
+        }, 4000);*/
 
         if(switchUbicacion.isChecked()) { //Si el interruptor esta activado
             final MapEventsReceiver mReceive = new MapEventsReceiver() {
