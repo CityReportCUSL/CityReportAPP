@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private String KEY_NOMBRE = "nombre";
     private String KEY_LON = "Longitud";
     private String KEY_LAT = "Latitud";
-    private String UPLOAD_URL = "http://52.47.189.194/funcionesphp/subirfoto.php";
+    private String UPLOAD_URL = "https://cityreport.ga/funcionesphp/subirfoto.php";
 
 
     private Bitmap bitmap = null;// Variable para guardar la imagen en un bitmap
@@ -140,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
                 if(textoDesc.getText().toString().equals("")||textoDesc.getText().toString().equals("Describa la incidencia...")) {
 
                     Toast.makeText(MainActivity.this,"Debe introducir descripción!", Toast.LENGTH_LONG).show();
-                }else{
+                }else if(ubicacion==null)
+                    Toast.makeText(MainActivity.this,"Debe indicar ubicación!", Toast.LENGTH_LONG).show();
+                else{
                     uploadImage();
                 }
             }
