@@ -1,5 +1,6 @@
 package com.example.cityreport;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,7 +31,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -63,11 +73,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validar_login() throws IOException, NoSuchAlgorithmException, URISyntaxException {
-        String mail=email.getText().toString();
+        final String mail=email.getText().toString();
 
         String password=passwd.getText().toString();
-
-        String pass_digest="";
 
 
 
@@ -81,10 +89,70 @@ public class LoginActivity extends AppCompatActivity {
                 hexString.append(hex);
             }
 
-            pass_digest=hexString.toString();
+        final String pass_digest=hexString.toString();
+        Toast.makeText(LoginActivity.this, pass_digest,Toast.LENGTH_LONG).show();
 
-      /*  String link ="https://www.cityreport.ga/funcionesphp/validar.php?email="+mail+"&password="+pass_digest;
+        String link ="https://www.cityreport.ga/funcionesphp/validar.php";
 
+        final ProgressDialog loading = ProgressDialog.show(this, "Validando...", "Espere por favor...", false, false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, link,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        //Descartar el diálogo de progreso
+                        loading.hide();
+
+                        if (s.trim().isEmpty()) {
+                            Toast.makeText(LoginActivity.this, "Login invalido" ,Toast.LENGTH_LONG).show();
+                        }
+
+                        else
+                            Toast.makeText(LoginActivity.this, "Login valido" ,Toast.LENGTH_LONG).show();
+
+                        //Mostrando el mensaje de la respuesta
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        //Descartar el diálogo de progreso
+                        loading.hide();
+
+                        //Showing toast
+                        Toast.makeText(LoginActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //Convertir bits a cadena
+
+
+                    //Creación de parámetros
+                    Map<String, String> params = new HashMap<>();
+
+                    //Agregando de parámetros
+
+                    params.put("email", mail);
+
+                    params.put("password",pass_digest);
+
+
+
+                    //Parámetros de retorno
+                    return params;
+
+            }
+        };
+
+        //Creación de una cola de solicitudes
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        //Agregar solicitud a la cola
+        requestQueue.add(stringRequest);
+
+/*
         URL url = new URL(link);
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet();
@@ -112,4 +180,5 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
 }
