@@ -90,9 +90,15 @@ public class MainActivity extends AppCompatActivity {
     private Marker markerManual; //Marcador al clicar en el mapa
     private GeoPoint ubicacion; //Ubicación del reporte
 
+    private Intent intent;   //Intent que lanza esta actividad
+    private String email;   //Email del usuario obtenido del login
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        intent = getIntent(); //Obtener el intent del login
+        email = intent.getStringExtra("email");
+        Toast.makeText(this,"Ha iniciado sesión como:\n"+email,Toast.LENGTH_SHORT).show();
+
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN); //esconder teclado
 

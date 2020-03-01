@@ -1,6 +1,7 @@
 package com.example.cityreport;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -90,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         final String pass_digest=hexString.toString();
-        Toast.makeText(LoginActivity.this, pass_digest,Toast.LENGTH_LONG).show();
+        //Toast.makeText(LoginActivity.this, pass_digest,Toast.LENGTH_LONG).show();
 
         String link ="https://www.cityreport.ga/funcionesphp/validar.php";
 
@@ -106,8 +107,15 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Login invalido" ,Toast.LENGTH_LONG).show();
                         }
 
-                        else
-                            Toast.makeText(LoginActivity.this, "Login valido" ,Toast.LENGTH_LONG).show();
+                        else {
+                            //Toast.makeText(LoginActivity.this, "Login valido", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("email",mail);
+                            startActivity(intent); //Iniciar la actividad principal
+
+
+
+                        }
 
                         //Mostrando el mensaje de la respuesta
 
