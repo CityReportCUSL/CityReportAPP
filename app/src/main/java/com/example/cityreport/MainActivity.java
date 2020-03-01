@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
     EditText textoDesc;     //Texto de la descripción del reporte
     Switch switchUbicacion; //Selector de ubicacion manual
 
-    boolean primerclick = false; //Verdadero cuando se clique por primera vez la descripción
+    boolean primerclick = false;        //Verdadero cuando se clique por primera vez la descripción
+    boolean primeraUbicacion = false;   //Verdadero al cambiar el modo de obtener la ubicacion
     private String KEY_IMAGEN = "foto";
     private String KEY_NOMBRE = "nombre";
     private String KEY_LON = "Longitud";
@@ -167,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     switchUbicacion.setChecked(true); //Se impide la ubicacion automatica
                     comprobarPermisos(); //Se vuelven a solicitar los permisos
                 }
+                primeraUbicacion=true;
                 setupMap();
             }
         });
@@ -255,8 +257,10 @@ public class MainActivity extends AppCompatActivity {
         controladorMapa = (MapController) vistaMapa.getController();
         //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
         vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
-        controladorMapa.animateTo(new GeoPoint(37.2663800,-6.9400400 ));
-        controladorMapa.setZoom(14);
+        if(!primeraUbicacion) { //Solo se hace la primera vez que se obtiene la ubicacion
+            controladorMapa.animateTo(new GeoPoint(37.2663800, -6.9400400));
+            controladorMapa.setZoom(12);
+        }
 
         //Retrasar zoom para que cargue mas rapido el mapa
 /*        Handler handler = new Handler();
@@ -279,8 +283,8 @@ public class MainActivity extends AppCompatActivity {
                     vistaMapa.getOverlays().remove(markerManual);
                     markerManual = new Marker(vistaMapa);
                     markerManual.setPosition(p);
-                    vistaMapa.getController().animateTo(p);//centrar el mapa en mi localizacion
-                    controladorMapa.setZoom(18);
+                    //vistaMapa.getController().animateTo(p);//centrar el mapa en mi localizacion
+                    //controladorMapa.setZoom(18);
                     vistaMapa.getOverlays().add(markerManual);
                     //Toast.makeText(getBaseContext(), p.getLatitude() + " - " + p.getLongitude(), Toast.LENGTH_LONG).show();
 
@@ -311,10 +315,11 @@ public class MainActivity extends AppCompatActivity {
         mLastLocation.enableFollowLocation();
         vistaMapa.getOverlays().add(mLastLocation);
 
-
-        vistaMapa.getController().animateTo(mLastLocation.getMyLocation());//centrar el mapa en mi localizacion
-
         ubicacion = mLastLocation.getMyLocation(); //Establecemos la ubicacion sacada del GPS
+        controladorMapa.animateTo(ubicacion); //centrar el mapa en mi localizacion
+        controladorMapa.setZoom(18); //Hacer zoom
+
+
     }
 
     @Override
