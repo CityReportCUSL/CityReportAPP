@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -143,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
         btnSubir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!switchUbicacion.isChecked()) ubicacion=mLastLocation.getMyLocation(); //Obtener la ubicación GPS si no está activada la manual
+
                 if(textoDesc.getText().toString().equals("")||textoDesc.getText().toString().equals("Describa la incidencia...")) {
 
                     Toast.makeText(MainActivity.this,"Debe introducir descripción!", Toast.LENGTH_LONG).show();
@@ -249,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         provider.setOsmdroidBasePath(getStorage());
         provider.setOsmdroidTileCache(getStorage());
 
-        vistaMapa.setBuiltInZoomControls(true);
+        //vistaMapa.setBuiltInZoomControls(true);
         vistaMapa.setClickable(true);
         vistaMapa.setMultiTouchControls(true);
 
@@ -300,28 +301,32 @@ public class MainActivity extends AppCompatActivity {
 
             vistaMapa.getOverlays().add(new MapEventsOverlay(mReceive));
         }else{
-
             getGPS();
         }
 
     }
     private void getGPS()
-    {   Toast.makeText(MainActivity.this, "gps", Toast.LENGTH_LONG).show();
+    {
         vistaMapa.getOverlays().clear();
         vistaMapa.getOverlays().remove(markerManual); //Quitar el marcador de ubicacion manual si lo hubiera
-        GpsMyLocationProvider provider2 = new GpsMyLocationProvider(getApplicationContext());
-        provider2.addLocationSource(LocationManager.GPS_PROVIDER); //network funciona mejor que gps
+        GpsMyLocationProvider provider2 = new GpsMyLocationProvider(MainActivity.this);
+        provider2.addLocationSource(LocationManager.NETWORK_PROVIDER); //network funciona mejor que gps
+
+
         mLastLocation = new MyLocationNewOverlay(provider2, vistaMapa);
+        //provider2.startLocationProvider(mLastLocation);
         mLastLocation.enableMyLocation();
 
         mLastLocation.enableFollowLocation();
-        vistaMapa.getOverlays().add(mLastLocation);
-        if( mLastLocation.getMyLocation()==null)Toast.makeText(MainActivity.this, "null toast", Toast.LENGTH_LONG).show();
 
-        ubicacion = mLastLocation.getMyLocation(); //Establecemos la ubicacion sacada del GPS
+        vistaMapa.getOverlays().add(mLastLocation);
+
+
+        //ubicacion = mLastLocation.getMyLocation(); //Establecemos la ubicacion sacada del GPS
         controladorMapa.animateTo(ubicacion); //centrar el mapa en mi localizacion
         controladorMapa.setZoom(18); //Hacer zoom
 
+        if(ubicacion==null)Toast.makeText(MainActivity.this, "Obteniendo ubicación GPS...", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -447,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
 
     ///// subir reporte/////////////////////////////////////////
     private void uploadImage() {
+
         //Mostrar el diálogo de progreso
         if (bitmap == null) {
             UPLOAD_URL = "https://cityreport.ga/funcionesphp/subirNoImage.php"; //funcion servidor para subir a la base de datos sin foto
