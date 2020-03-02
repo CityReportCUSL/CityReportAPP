@@ -108,9 +108,11 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         else {
+
+                            Toast.makeText(LoginActivity.this, s.toString(),Toast.LENGTH_LONG).show();
                             //Toast.makeText(LoginActivity.this, "Login valido", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("email",mail);
+                            intent.putExtra("id_user",s.toString());
                             startActivity(intent); //Iniciar la actividad principal
 
 

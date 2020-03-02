@@ -92,13 +92,12 @@ public class MainActivity extends AppCompatActivity {
     private GeoPoint ubicacion; //Ubicación del reporte
 
     private Intent intent;   //Intent que lanza esta actividad
-    private String email;   //Email del usuario obtenido del login
+    private String id_user;   //Email del usuario obtenido del login
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intent = getIntent(); //Obtener el intent del login
-        email = intent.getStringExtra("email");
-        Toast.makeText(this,"Ha iniciado sesión como:\n"+email,Toast.LENGTH_SHORT).show();
+        id_user = intent.getStringExtra("id_user");
 
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN); //esconder teclado
@@ -276,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
         }, 4000);*/
 
         if(switchUbicacion.isChecked()) { //Si el interruptor esta activado
+
             final MapEventsReceiver mReceive = new MapEventsReceiver() {
                 @Override
                 public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -299,21 +299,24 @@ public class MainActivity extends AppCompatActivity {
             };
 
             vistaMapa.getOverlays().add(new MapEventsOverlay(mReceive));
-        }
-        else
+        }else{
+
             getGPS();
+        }
 
     }
     private void getGPS()
-    {
+    {   Toast.makeText(MainActivity.this, "gps", Toast.LENGTH_LONG).show();
         vistaMapa.getOverlays().clear();
         vistaMapa.getOverlays().remove(markerManual); //Quitar el marcador de ubicacion manual si lo hubiera
         GpsMyLocationProvider provider2 = new GpsMyLocationProvider(getApplicationContext());
-        provider2.addLocationSource(LocationManager.NETWORK_PROVIDER); //network funciona mejor que gps
+        provider2.addLocationSource(LocationManager.GPS_PROVIDER); //network funciona mejor que gps
         mLastLocation = new MyLocationNewOverlay(provider2, vistaMapa);
         mLastLocation.enableMyLocation();
+
         mLastLocation.enableFollowLocation();
         vistaMapa.getOverlays().add(mLastLocation);
+        if( mLastLocation.getMyLocation()==null)Toast.makeText(MainActivity.this, "null toast", Toast.LENGTH_LONG).show();
 
         ubicacion = mLastLocation.getMyLocation(); //Establecemos la ubicacion sacada del GPS
         controladorMapa.animateTo(ubicacion); //centrar el mapa en mi localizacion
@@ -500,6 +503,7 @@ public class MainActivity extends AppCompatActivity {
                     params.put(KEY_LAT,ubicacion.getLatitude()+"");
                     params.put(KEY_LON,ubicacion.getLongitude()+"");
 
+                    params.put("autor",id_user);
 
 
                     //Parámetros de retorno
@@ -521,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
                     params.put(KEY_LAT,mLastLocation.getMyLocation().getLatitude()+"");
                     params.put(KEY_LON,mLastLocation.getMyLocation().getLongitude()+"");
 
+                    params.put("autor",id_user);
 
 
                     //Parámetros de retorno
