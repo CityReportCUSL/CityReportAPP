@@ -1,15 +1,14 @@
 package com.example.cityreport;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -19,111 +18,96 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
     EditText email;
-    EditText passwd;
-    Button login;
+    EditText password;
+    EditText usuario;
     Button register;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
-        email=findViewById(R.id.textoEmail);
-        passwd=findViewById(R.id.textoPassword);
-        login=findViewById(R.id.boton_login);
-        register=findViewById(R.id.botonRegister);
-
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!email.getText().toString().isEmpty()&&!passwd.getText().toString().isEmpty()){
-                    try {
-                        validar_login();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        email = findViewById(R.id.textoEmail);
+        password = findViewById(R.id.textoPassword);
+        usuario = findViewById(R.id.textoUsuario);
+        register = findViewById(R.id.botonRegister);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                //intent.putExtra("id_user",s.toString()); comprobar si tiene arroba y ponerlo en email
-                startActivity(intent); //Iniciar la actividad principal
+                if (!usuario.getText().toString().isEmpty() && !email.getText().toString().isEmpty() && !password.getText().toString().isEmpty()) {
+                    try {
+                        validar_register();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
 
+                }
+                else
+                    Toast.makeText(RegisterActivity.this, "Debe rellenar los campos!", Toast.LENGTH_SHORT).show();
             }
-
         });
 
     }
 
-    private void validar_login() throws IOException, NoSuchAlgorithmException, URISyntaxException {
-        final String mail=email.getText().toString();
-        String password=passwd.getText().toString();
+    private void validar_register() throws Exception {
+        final String emailS = email.getText().toString();
+        final String usuarioS = usuario.getText().toString();
+        String passwordS = password.getText().toString();
 
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes("UTF-8"));
-            StringBuffer hexString = new StringBuffer();
+        if(!emailS.contains("@") || !emailS.contains("."))
+            throw new Exception("Error: email no válido!");
 
-            for (int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
-                if(hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
+        //GENERAR CONTRASEÑA ENCRIPTADA
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(passwordS.getBytes("UTF-8"));
+        StringBuffer hexString = new StringBuffer();
 
-        final String pass_digest=hexString.toString();
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+
+        final String pass_digest = hexString.toString();
         //Toast.makeText(LoginActivity.this, pass_digest,Toast.LENGTH_LONG).show();
 
-        String link ="https://www.cityreport.ga/funcionesphp/validar.php";
+        String link = "https://www.cityreport.ga/funcionesphp/registro.php";
 
         final ProgressDialog loading = ProgressDialog.show(this, "Validando...", "Espere por favor...", false, false);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, link,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
+                        //Toast.makeText(RegisterActivity.this, "recibe respuesta", Toast.LENGTH_SHORT).show();
                         //Descartar el diálogo de progreso
                         loading.hide();
+                        if (!s.contains("ok")||s.isEmpty()) {
+                                Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_LONG).show();
+                        } else {
 
-                        if (s.trim().isEmpty()) {
-                            Toast.makeText(LoginActivity.this, "Login invalido" ,Toast.LENGTH_LONG).show();
-                        }
-
-                        else {
-
-                            Toast.makeText(LoginActivity.this, s.toString(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, "Registrado correctamente", Toast.LENGTH_SHORT).show();
                             //Toast.makeText(LoginActivity.this, "Login valido", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("id_user",s.toString());
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            intent.putExtra("id_user",s.substring(0,s.length()-2)); //Quitamos el "ok" de la respuesta
                             startActivity(intent); //Iniciar la actividad principal
 
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -133,19 +117,24 @@ public class LoginActivity extends AppCompatActivity {
                         loading.hide();
 
                         //Showing toast
-                        Toast.makeText(LoginActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, "Error al registrar\n"+volleyError.getMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
+                //Convertir bits a cadena
+
 
                 //Creación de parámetros
                 Map<String, String> params = new HashMap<>();
 
                 //Agregando de parámetros
-                params.put("email", mail);
-                params.put("password",pass_digest);
+
+                params.put("email", emailS);
+                params.put("password", pass_digest);
+                params.put("username", usuarioS);
+
 
                 //Parámetros de retorno
                 return params;
@@ -158,7 +147,5 @@ public class LoginActivity extends AppCompatActivity {
 
         //Agregar solicitud a la cola
         requestQueue.add(stringRequest);
-
     }
-
 }
