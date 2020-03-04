@@ -46,9 +46,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+                app:layout_constraintTop_toBottomOf="@+id/imageView4"
+                android:onClick="onClick"/>
 
             <Button
+                android:onClick="onClick"
                 android:id="@+id/boton_github"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,31 +64,33 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/boton_web" />
 
-            <Button
-            android:id="@+id/boton_wordpress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="48dp"
-            android:drawableLeft="@drawable/ic_wordpress"
-            android:text="    Blog de desarrollo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/boton_github" />
-
-            <Button
-                android:id="@+id/boton_bug"
+                <Button
+                android:onClick="onClick"
+                android:id="@+id/boton_wordpress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="48dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="48dp"
-                android:drawableLeft="@drawable/ic_exclamation"
-                android:text="    Reportar errores"
+                android:drawableLeft="@drawable/ic_wordpress"
+                android:text="    Blog de desarrollo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/boton_wordpress" />
+                app:layout_constraintTop_toBottomOf="@+id/boton_github" />
+
+                <Button
+                    android:onClick="onClick"
+                    android:id="@+id/boton_bug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="48dp"
+                    android:drawableLeft="@drawable/ic_exclamation"
+                    android:text="    Reportar errores"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/boton_wordpress" />
 
             <TextView
                 android:id="@+id/textoVersion"
@@ -111,7 +115,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="32dp"
                 android:gravity="left"
-                android:text="Desarrollado por:\n\t- Víctor M. Rodríguez\n\t- Ángel Aznar"
+                android:text="Desarrollado por:\n\t- Víctor M. Rodríguez\n\t- Ángel Aznar\ncityreportcusl@outlook.com"
                 android:textColor="@android:color/background_light"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
