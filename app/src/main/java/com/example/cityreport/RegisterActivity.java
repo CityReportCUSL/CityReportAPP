@@ -17,6 +17,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,9 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
-    EditText email;
-    EditText password;
-    EditText usuario;
+    TextInputEditText email;
+    TextInputEditText password;
+    TextInputEditText password2;
+    TextInputEditText usuario;
+
+
     Button register;
 
 
@@ -37,8 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+
         email = findViewById(R.id.textoEmail);
         password = findViewById(R.id.textoPassword);
+        password2 = findViewById(R.id.textoPassword2);
         usuario = findViewById(R.id.textoUsuario);
         register = findViewById(R.id.botonRegister);
 
@@ -68,10 +75,18 @@ public class RegisterActivity extends AppCompatActivity {
     private void validar_register() throws Exception {
         final String emailS = email.getText().toString();
         final String usuarioS = usuario.getText().toString();
-        String passwordS = password.getText().toString();
+        final String passwordS = password.getText().toString();
+        final String passwordS2 = password2.getText().toString();
 
+        //COMPROBAR EMAIL VALIDO
         if(!emailS.contains("@") || !emailS.contains("."))
             throw new Exception("Error: email no válido!");
+
+        //COMPROBAR CONTRASEÑAS COINCIDEN
+        if(!passwordS.equals(passwordS2)) {
+            throw new Exception("Error: las contraseñas no coinciden!");
+
+        }
 
         //GENERAR CONTRASEÑA ENCRIPTADA
         MessageDigest digest = MessageDigest.getInstance("SHA-256");

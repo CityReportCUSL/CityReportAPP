@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CityReport</string>
+    <string name="password">Contraseña</string>
+    <string name="password2">Repetir contraseña</string>
 </resources>
