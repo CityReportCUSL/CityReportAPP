@@ -1,7 +1,9 @@
 package com.example.cityreport;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -52,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         login=findViewById(R.id.boton_login);
         register=findViewById(R.id.botonRegister);
 
+
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,11 +85,21 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
+        try {
+            cargarCredenciales(); //Intenta cargar credenciales guardados
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void validar_login() throws IOException, NoSuchAlgorithmException, URISyntaxException {
         final String mail=email.getText().toString();
-        String password=passwd.getText().toString();
+        final String password=passwd.getText().toString();
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes("UTF-8"));
@@ -115,12 +129,11 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         else {
-
-                            //Toast.makeText(LoginActivity.this, s.toString(),Toast.LENGTH_LONG).show();
-                            //Toast.makeText(LoginActivity.this, "Login valido", Toast.LENGTH_SHORT).show();
+                            guardarCredenciales(mail,password); //Guarda las preferencias de inicio de sesión
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("id_user",s.toString());
                             startActivity(intent); //Iniciar la actividad principal
+                            finish(); //Finalizar esta actividad
 
                         }
 
@@ -158,6 +171,33 @@ public class LoginActivity extends AppCompatActivity {
 
         //Agregar solicitud a la cola
         requestQueue.add(stringRequest);
+
+    }
+
+    private void guardarCredenciales(String usuario, String pass) {
+        SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+
+        editor.putString("usuario",usuario);
+        editor.putString("pass",pass);
+
+        editor.commit();
+    }
+
+    private void cargarCredenciales() throws NoSuchAlgorithmException, IOException, URISyntaxException {
+        SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+
+        String usuario = preferencias.getString("usuario","null"); //Devuelve "null" si no es valido
+        String pass = preferencias.getString("pass","null");
+
+        if(!usuario.equals("null") && !pass.equals("null") && preferencias.contains("usuario") && preferencias.contains("pass"))
+        {
+            email.setText(usuario);
+            passwd.setText(pass);
+            validar_login();
+        }
+
+
 
     }
 

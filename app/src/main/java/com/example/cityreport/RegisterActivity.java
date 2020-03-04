@@ -121,6 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                             intent.putExtra("id_user",s.substring(0,s.length()-2)); //Quitamos el "ok" de la respuesta
                             startActivity(intent); //Iniciar la actividad principal
+                            finish(); //Finalizar esta actividad
 
                         }
                     }

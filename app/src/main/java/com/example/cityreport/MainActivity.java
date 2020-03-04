@@ -3,8 +3,10 @@ package com.example.cityreport;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.LocationManager;
@@ -14,6 +16,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +97,34 @@ public class MainActivity extends AppCompatActivity {
 
     private Intent intent;   //Intent que lanza esta actividad
     private String id_user;   //Email del usuario obtenido del login
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.cerrar_sesion:
+                Toast.makeText(MainActivity.this,"Cerrando sesión...",Toast.LENGTH_SHORT);
+
+                //BORRAR LAS PREFERENCIAS DE INICIO DE SESION
+                SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferencias.edit();
+                editor.remove("usuario"); editor.remove("pass");
+                editor.commit();
+
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +175,13 @@ public class MainActivity extends AppCompatActivity {
         btnSubir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!switchUbicacion.isChecked()) ubicacion=mLastLocation.getMyLocation(); //Obtener la ubicación GPS si no está activada la manual
+                if(!switchUbicacion.isChecked()){
+                    Toast.makeText(MainActivity.this,"no checked", Toast.LENGTH_SHORT).show();
+                    ubicacion = mLastLocation.getMyLocation(); //Obtener la ubicación GPS si no está activada la manual
+                }
+
+
+
 
                 if(textoDesc.getText().toString().equals("")||textoDesc.getText().toString().equals("Describa la incidencia...")) {
 
@@ -524,15 +563,11 @@ public class MainActivity extends AppCompatActivity {
                     //Creación de parámetros
                     Map<String, String> params = new HashMap<>();
 
-                    //Agregando de parámetros
-
+                    //Agregando parámetros
                     params.put(KEY_NOMBRE, nombre);
-
-                    params.put(KEY_LAT,mLastLocation.getMyLocation().getLatitude()+"");
-                    params.put(KEY_LON,mLastLocation.getMyLocation().getLongitude()+"");
-
+                    params.put(KEY_LAT, ubicacion.getLatitude() + "");
+                    params.put(KEY_LON, ubicacion.getLongitude() + "");
                     params.put("autor",id_user);
-
 
                     //Parámetros de retorno
                     return params;
