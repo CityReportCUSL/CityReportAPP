@@ -120,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
+                finish(); //Cerrar la actividad Main
+                break;
+
+            case R.id.acerca_de:
+                Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent2);
                 break;
         }
         return super.onOptionsItemSelected(item);

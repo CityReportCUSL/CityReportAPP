@@ -11,7 +11,8 @@ android {
     if (!versionPropsFile.exists()) {
         versionProps['VERSION_PATCH'] = "0"
         versionProps['VERSION_NUMBER'] = "1"
-        versionProps['VERSION_BUILD'] = "0" // I set it to minus one so the first build is 0 which isn't super important.
+        versionProps['VERSION_BUILD'] = "0"
+        // I set it to minus one so the first build is 0 which isn't super important.
         versionProps.store(versionPropsFile.newWriter(), null)
     }
 
@@ -59,7 +60,7 @@ android {
         }
     }
 
-    task copyApkFiles(type: Copy){
+    task copyApkFiles(type: Copy) {
         from 'build/outputs/apk/release'
         into '../apk'
         include mFileName
