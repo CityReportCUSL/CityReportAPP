@@ -182,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!switchUbicacion.isChecked()){
-                    Toast.makeText(MainActivity.this,"no checked", Toast.LENGTH_SHORT).show();
                     ubicacion = mLastLocation.getMyLocation(); //Obtener la ubicación GPS si no está activada la manual
                 }
 
