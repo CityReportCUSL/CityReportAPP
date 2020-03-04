@@ -22,7 +22,7 @@
 
                 android:layout_marginTop="16dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/cr_logo" />
+                app:srcCompat="@drawable/cr_logo_blue" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout4"
@@ -32,8 +32,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 app:errorEnabled="true"
-                app:counterEnabled="true"
-                app:counterMaxLength="15"
+                app:counterMaxLength="50"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -42,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Nombre de usuario"
                     android:inputType="text"
-                    android:maxLength="15"
+                    android:maxLength="50"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,6 +61,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Email"
                     android:inputType="textEmailAddress"
+                    android:maxLength="50"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 

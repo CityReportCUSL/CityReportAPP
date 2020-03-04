@@ -111,12 +111,12 @@ public class LoginActivity extends AppCompatActivity {
                         loading.hide();
 
                         if (s.trim().isEmpty()) {
-                            Toast.makeText(LoginActivity.this, "Login invalido" ,Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Error: datos inválidos!" ,Toast.LENGTH_LONG).show();
                         }
 
                         else {
 
-                            Toast.makeText(LoginActivity.this, s.toString(),Toast.LENGTH_LONG).show();
+                            //Toast.makeText(LoginActivity.this, s.toString(),Toast.LENGTH_LONG).show();
                             //Toast.makeText(LoginActivity.this, "Login valido", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("id_user",s.toString());

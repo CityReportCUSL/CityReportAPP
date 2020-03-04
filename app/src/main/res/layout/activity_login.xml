@@ -22,7 +22,7 @@
 
                 android:layout_marginTop="16dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/cr_logo" />
+                app:srcCompat="@drawable/cr_logo_blue" />
 
             <EditText
                 android:id="@+id/textoEmail"
