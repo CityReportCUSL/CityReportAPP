@@ -53,6 +53,8 @@ import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private MapController controladorMapa;
+    RotationGestureOverlay mRotationGestureOverlay;
     private MyLocationNewOverlay mLastLocation; //Localizacion obtenida por GPS
     private Marker markerManual; //Marcador al clicar en el mapa
     private GeoPoint ubicacion; //Ubicación del reporte
@@ -142,13 +145,21 @@ public class MainActivity extends AppCompatActivity {
 
         vistaMapa = findViewById(R.id.mapview);
         vistaImagen = findViewById(R.id.imageView);
-
         btnSelect = findViewById(R.id.botonSelect);
         btnSubir = findViewById(R.id.boton_subir);
-
         textoDesc = findViewById(R.id.editText);
-
         switchUbicacion = findViewById(R.id.switchUbicacion);
+
+        //CONFIGURACION DEL MAPA
+        mRotationGestureOverlay = new RotationGestureOverlay(MainActivity.this, vistaMapa);
+        mRotationGestureOverlay.setEnabled(true);
+        vistaMapa.setMultiTouchControls(true);
+        vistaMapa.getOverlays().add(mRotationGestureOverlay);
+        vistaMapa.setClickable(true);
+        controladorMapa = (MapController) vistaMapa.getController();
+        //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
+        vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+
 
         comprobarPermisos();
         setupMap();
@@ -184,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
                 if(!switchUbicacion.isChecked()){
                     ubicacion = mLastLocation.getMyLocation(); //Obtener la ubicación GPS si no está activada la manual
                 }
-
-
-
 
                 if(textoDesc.getText().toString().equals("")||textoDesc.getText().toString().equals("Describa la incidencia...")) {
 
@@ -295,12 +303,7 @@ public class MainActivity extends AppCompatActivity {
         provider.setOsmdroidTileCache(getStorage());
 
         //vistaMapa.setBuiltInZoomControls(true);
-        vistaMapa.setClickable(true);
-        vistaMapa.setMultiTouchControls(true);
 
-        controladorMapa = (MapController) vistaMapa.getController();
-        //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
-        vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
         if(!primeraUbicacion) { //Solo se hace la primera vez que se obtiene la ubicacion
             controladorMapa.animateTo(new GeoPoint(37.2663800, -6.9400400));
             controladorMapa.setZoom(12);
@@ -327,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
                     vistaMapa.getOverlays().remove(mLastLocation);
                     vistaMapa.getOverlays().remove(markerManual);
                     markerManual = new Marker(vistaMapa);
+                    markerManual.setInfoWindow(null); //Quitar ventanita del marcador
                     markerManual.setPosition(p);
                     //vistaMapa.getController().animateTo(p);//centrar el mapa en mi localizacion
                     //controladorMapa.setZoom(18);
@@ -351,8 +355,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void getGPS()
     {
-        vistaMapa.getOverlays().clear();
         vistaMapa.getOverlays().remove(markerManual); //Quitar el marcador de ubicacion manual si lo hubiera
+
         GpsMyLocationProvider provider2 = new GpsMyLocationProvider(MainActivity.this);
         provider2.addLocationSource(LocationManager.NETWORK_PROVIDER); //network funciona mejor que gps
 
