@@ -155,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
         mRotationGestureOverlay.setEnabled(true);
         vistaMapa.setMultiTouchControls(true);
         vistaMapa.getOverlays().add(mRotationGestureOverlay);
-        vistaMapa.setClickable(true);
         controladorMapa = (MapController) vistaMapa.getController();
         //vistaMapa.setTileSource(TileSourceFactory.MAPNIK);
         vistaMapa.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+        vistaMapa.setClickable(false);
 
 
         comprobarPermisos();
@@ -211,15 +211,15 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     Toast.makeText(MainActivity.this, "Clique en el mapa para indicar la ubicación", Toast.LENGTH_LONG).show();
-
                 }
                 else if(ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED) //Si no ha otorgado permiso de ubicación
                 {
-                    Toast.makeText(MainActivity.this, "No ha otorgado permiso de ubicación!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Error: No ha otorgado\nlos permisos necesarios!", Toast.LENGTH_LONG).show();
                     switchUbicacion.setChecked(true); //Se impide la ubicacion automatica
                     comprobarPermisos(); //Se vuelven a solicitar los permisos
                 }
+
                 primeraUbicacion=true;
                 setupMap();
             }
@@ -323,7 +323,6 @@ public class MainActivity extends AppCompatActivity {
         }, 4000);*/
 
         if(switchUbicacion.isChecked()) { //Si el interruptor esta activado
-
             final MapEventsReceiver mReceive = new MapEventsReceiver() {
                 @Override
                 public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -356,7 +355,6 @@ public class MainActivity extends AppCompatActivity {
     private void getGPS()
     {
         vistaMapa.getOverlays().remove(markerManual); //Quitar el marcador de ubicacion manual si lo hubiera
-
         GpsMyLocationProvider provider2 = new GpsMyLocationProvider(MainActivity.this);
         provider2.addLocationSource(LocationManager.NETWORK_PROVIDER); //network funciona mejor que gps
 
