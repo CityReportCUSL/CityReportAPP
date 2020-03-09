@@ -79,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String passwordS2 = password2.getText().toString();
 
         //COMPROBAR EMAIL VALIDO
-        if(!emailS.contains("@") || !emailS.contains("."))
+        if(!emailValido(emailS))
             throw new Exception("Error: email no válido!");
 
         //COMPROBAR CONTRASEÑAS COINCIDEN
@@ -163,5 +163,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         //Agregar solicitud a la cola
         requestQueue.add(stringRequest);
+    }
+
+    public boolean emailValido(String email)
+    {
+        if (email.isEmpty()) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
     }
 }
