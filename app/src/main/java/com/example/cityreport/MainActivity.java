@@ -184,7 +184,10 @@ public class MainActivity extends AppCompatActivity {
         //Botón para tomar o seleccionar foto
         btnSelect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showFileChooser();
+                //showFileChooser();
+                Intent intent = new Intent(MainActivity.this, ReportsActivity.class);
+                intent.putExtra("user_id", id_user);
+                startActivity(intent);
             }
         });
 
