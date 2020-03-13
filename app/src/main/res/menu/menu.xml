@@ -3,15 +3,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/acerca_de"
+        android:id="@+id/mis_reportes"
+        android:icon="@drawable/ic_cerrar_sesion"
+        android:title="Mis reportes"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/acerca_de_action"
         android:icon="@drawable/ic_info"
         android:title="Acerca de"
         app:showAsAction="ifRoom" />
 
     <item
-    android:id="@+id/cerrar_sesion"
-    android:icon="@drawable/ic_cerrar_sesion"
-    android:title="Cerrar Sesión"
-    app:showAsAction="ifRoom" />
+        android:id="@+id/acerca_de"
+        android:icon="@drawable/ic_info"
+        android:title="Acerca de"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/cerrar_sesion_action"
+        android:icon="@drawable/ic_cerrar_sesion"
+        android:title="Cerrar Sesión"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/cerrar_sesion"
+        android:icon="@drawable/ic_cerrar_sesion"
+        android:title="Cerrar Sesión"
+        app:showAsAction="ifRoom" />
 
 </menu>

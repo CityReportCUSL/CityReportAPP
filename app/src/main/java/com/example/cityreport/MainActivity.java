@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.cerrar_sesion:
+            case R.id.cerrar_sesion_action:
                 Toast.makeText(MainActivity.this,"Cerrando sesión...",Toast.LENGTH_SHORT);
 
                 //BORRAR LAS PREFERENCIAS DE INICIO DE SESION
@@ -127,9 +128,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.acerca_de:
+            case R.id.acerca_de_action:
                 Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(intent2);
                 break;
+
+            case R.id.mis_reportes:
+                Intent intent3 = new Intent(MainActivity.this, ReportsActivity.class);
+                intent3.putExtra("user_id", id_user);
+                startActivity(intent3);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -184,10 +193,7 @@ public class MainActivity extends AppCompatActivity {
         //Botón para tomar o seleccionar foto
         btnSelect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //showFileChooser();
-                Intent intent = new Intent(MainActivity.this, ReportsActivity.class);
-                intent.putExtra("user_id", id_user);
-                startActivity(intent);
+                showFileChooser();
             }
         });
 
