@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -21,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +32,7 @@ import java.util.Map;
 public class ReportsActivity extends AppCompatActivity {
     private Intent intent;   //Intent que lanza esta actividad
     private String user_id;
+    private  TableLayout tablaReportes;
     RequestQueue colaSolicitud;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +45,7 @@ public class ReportsActivity extends AppCompatActivity {
 
         if(!user_id.isEmpty())
         {
-            TableLayout tablaReportes = findViewById(R.id.tablaReportes);
+            tablaReportes = findViewById(R.id.tablaReportes);
 
            // TableRow[] rows = new TableRow[productsList.length()];
             getReportes(user_id);
@@ -70,11 +74,35 @@ private void getReportes(String user_id)
                     {
                         JSONObject reporte = jsonArray.getJSONObject(i);
                         int id = reporte.getInt("id");
-                        String foto = reporte.getString("foto");
+                        //String foto = reporte.getString("foto");
                         String descripcion = reporte.getString("descripcion");
                         String estado = reporte.getString("estado");
 
+                        TextView viewId = new TextView(ReportsActivity.this);
+                        viewId.setText(String.valueOf(id));
+
+                        TextView viewDescripcion = new TextView(ReportsActivity.this);
+                        viewDescripcion.setText(descripcion);
+
+                        TextView viewEstado = new TextView(ReportsActivity.this);
+                        viewEstado.setText(estado);
+
+                       // ImageView viewEstado= new ImageView(ReportsActivity.this);
+                       // viewFoto.setImageResource(R.drawable.person);
+
                         Toast.makeText(ReportsActivity.this,"REPORTE "+id+" - "+descripcion+" - "+ estado,Toast.LENGTH_LONG).show();
+
+
+                        /* Create a new row to be added. */
+                        TableRow tr = new TableRow(ReportsActivity.this);
+                        tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+                        tr.addView(viewId);
+                        tr.addView(viewDescripcion);
+                        tr.addView(viewEstado);
+                        /* Add row to TableLayout. */
+//tr.setBackgroundResource(R.drawable.sf_gradient_03);
+                        tablaReportes.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
                     }
                 } catch (JSONException e) {

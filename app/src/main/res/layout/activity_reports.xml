@@ -7,26 +7,28 @@
     tools:context=".ReportsActivity">
 
     <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TableLayout
                 android:id="@+id/tablaReportes"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="32dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:shrinkColumns="*"
+                android:stretchColumns="*">
 
                 <TableRow
                     android:id="@+id/cabecera"
@@ -39,47 +41,28 @@
                         android:layout_height="match_parent"
                         android:background="@color/cr_icon_background"
                         android:gravity="center"
-                        android:text="FOTO" />
+                        android:shadowColor="#636363"
+                        android:text="ID"
+                        android:textColor="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/textoDesc"
-                        android:layout_width="146dp"
+                        android:layout_width="213dp"
                         android:layout_height="match_parent"
                         android:background="@color/cr_icon_background"
                         android:gravity="center"
-                        android:text="DESCRIPCIÓN" />
+                        android:text="DESCRIPCIÓN"
+                        android:textColor="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/textoEstado"
-                        android:layout_width="68dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="91dp"
+                        android:layout_height="match_parent"
                         android:background="@color/cr_icon_background"
                         android:gravity="center"
-                        android:text="ESTADO" />
+                        android:text="ESTADO"
+                        android:textColor="#FFFFFF" />
 
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imageView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:srcCompat="@tools:sample/avatars" />
-
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="113dp"
-                        android:layout_height="match_parent"
-                        android:text="TextView" />
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="TextView" />
                 </TableRow>
 
             </TableLayout>
