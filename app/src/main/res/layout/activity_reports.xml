@@ -15,10 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
             <TableLayout
                 android:id="@+id/tablaReportes"
@@ -27,37 +23,44 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:shrinkColumns="*"
-                android:stretchColumns="*">
+                android:weightSum="1"
+                android:stretchColumns="1"
+                android:shrinkColumns="1">
 
                 <TableRow
                     android:id="@+id/cabecera"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+
                     <TextView
-                        android:id="@+id/textoFoto"
-                        android:layout_width="102dp"
-                        android:layout_height="match_parent"
+                        android:id="@+id/CabeceraID"
+                        android:layout_width="0dp"
+                        android:layout_column="0"
+                        android:paddingStart="10dp"
+                        android:layout_weight="0.2"
                         android:background="@color/cr_icon_background"
-                        android:gravity="center"
+                        android:gravity="left"
                         android:shadowColor="#636363"
                         android:text="ID"
                         android:textColor="#FFFFFF" />
 
+
                     <TextView
-                        android:id="@+id/textoDesc"
-                        android:layout_width="213dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/cr_icon_background"
+                        android:id="@+id/cabeceraDesc"
                         android:gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_column="1"
+                        android:layout_weight="0.6"
+                        android:background="@color/cr_icon_background"
                         android:text="DESCRIPCIÓN"
                         android:textColor="#FFFFFF" />
 
                     <TextView
-                        android:id="@+id/textoEstado"
-                        android:layout_width="91dp"
-                        android:layout_height="match_parent"
+                        android:id="@+id/cabeceraEstado"
+                        android:layout_width="0dp"
+                        android:layout_column="2"
+                        android:layout_weight="0.2"
                         android:background="@color/cr_icon_background"
                         android:gravity="center"
                         android:text="ESTADO"
@@ -67,7 +70,6 @@
 
             </TableLayout>
 
-        </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

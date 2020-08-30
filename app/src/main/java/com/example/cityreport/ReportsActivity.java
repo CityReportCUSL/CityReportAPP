@@ -1,10 +1,14 @@
 package com.example.cityreport;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -78,31 +82,63 @@ private void getReportes(String user_id)
                         String descripcion = reporte.getString("descripcion");
                         String estado = reporte.getString("estado");
 
+                        TableRow.LayoutParams lP = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lP.setMargins(20,5,10,5);
+                        lP.gravity = Gravity.CENTER_VERTICAL;
+
                         TextView viewId = new TextView(ReportsActivity.this);
                         viewId.setText(String.valueOf(id));
+                        viewId.setLayoutParams(lP);
+
 
                         TextView viewDescripcion = new TextView(ReportsActivity.this);
                         viewDescripcion.setText(descripcion);
+                        viewDescripcion.setLayoutParams(lP);
+                        viewDescripcion.setMaxLines(20); //Saltos de linea en la descripcion
 
-                        TextView viewEstado = new TextView(ReportsActivity.this);
-                        viewEstado.setText(estado);
 
-                       // ImageView viewEstado= new ImageView(ReportsActivity.this);
-                       // viewFoto.setImageResource(R.drawable.person);
+                        //TextView viewEstado = new TextView(ReportsActivity.this);
+                        //viewEstado.setText(estado);
 
-                        Toast.makeText(ReportsActivity.this,"REPORTE "+id+" - "+descripcion+" - "+ estado,Toast.LENGTH_LONG).show();
+
+
+                        final ImageView viewEstado = new ImageView(ReportsActivity.this);
+                        viewEstado.setLayoutParams(lP);
+                        viewEstado.setContentDescription(id +" - "+ estado); //almacenamos el estado del reporte para el onClick
+                        if(estado.equals("pendiente"))
+                            viewEstado.setImageResource(R.drawable.ic_exclamation_red);
+                        else if (estado.equals("revisado"))
+                            viewEstado.setImageResource(R.drawable.ic_exclamation_orange);
+                        else if(estado.equals("finalizado"))
+                            viewEstado.setImageResource(R.drawable.ic_exclamation_green);
+                        else
+                            viewEstado.setImageResource(R.drawable.ic_exclamation);
+
+                        viewEstado.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(ReportsActivity.this,
+                                        viewEstado.getContentDescription(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        //Toast.makeText(ReportsActivity.this,"REPORTE "+id+" - "+descripcion+" - "+ estado,Toast.LENGTH_LONG).show();
 
 
                         /* Create a new row to be added. */
                         TableRow tr = new TableRow(ReportsActivity.this);
-                        tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                        tr.setBackground(ContextCompat.getDrawable(ReportsActivity.this, R.drawable.border));
+
+                        //tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+
 
                         tr.addView(viewId);
                         tr.addView(viewDescripcion);
                         tr.addView(viewEstado);
                         /* Add row to TableLayout. */
 //tr.setBackgroundResource(R.drawable.sf_gradient_03);
-                        tablaReportes.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                        tablaReportes.addView(tr);
 
                     }
                 } catch (JSONException e) {
